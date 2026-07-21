@@ -1,3 +1,3 @@
 <?php
-
-echo "RAG Chatbot Project";
+header("Location: login.php");
+exit;
