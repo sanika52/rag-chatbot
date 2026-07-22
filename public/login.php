@@ -1,43 +1,90 @@
+<?php
+
+session_start();
+
+$error = "";
+$success = "";
+
+if (isset($_SESSION["error"])) {
+    $error = $_SESSION["error"];
+    unset($_SESSION["error"]);
+}
+
+if (isset($_SESSION["success"])) {
+    $success = $_SESSION["success"];
+    unset($_SESSION["success"]);
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Login | RAG Chatbot</title>
+    <title>Login | RAG Chatbot</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="../assests/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 
 </head>
 
 <body class="login-page">
 
-<div class="login-card">
+    <div class="login-card">
 
-<h1>RAG CHATBOT </h1>
+        <h1>RAG CHATBOT</h1>
 
-<p>Login to continue</p>
+        <p>Login to continue</p>
 
-<input type="email" placeholder="Email Address">
+        <?php if (!empty($error)): ?>
+            <p style="color:red; text-align:center; margin-bottom:15px;">
+                <?= htmlspecialchars($error) ?>
+            </p>
+        <?php endif; ?>
 
-<input type="password" placeholder="Password">
+        <?php if (!empty($success)): ?>
+            <p style="color:green; text-align:center; margin-bottom:15px;">
+                <?= htmlspecialchars($success) ?>
+            </p>
+        <?php endif; ?>
 
-<button onclick="window.location.href='chat.php'">
+        <!-- Login Form -->
+        <form action="actions/login_action.php" method="POST">
 
-Login
+            <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                required>
 
-</button>
+            <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required>
 
-</div>
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <p style="margin-top:15px; text-align:center;">
+            New User?
+            <a href="register.php">Register Here</a>
+        </p>
+
+    </div>
 
 </body>
 
