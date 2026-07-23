@@ -11,8 +11,9 @@
 
 body{
     background:#f6f8fb;
-    height:100vh;
-    overflow:hidden;
+    min-height:100vh;
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 
 /* ===========================
@@ -433,103 +434,372 @@ width:100%;
 
 }
 /* ===========================
-   Login Page
+   Login / Register Page
 =========================== */
-
 .login-page{
 
-display:flex;
+    display:flex;
 
-justify-content:center;
+    justify-content:center;
 
-align-items:center;
+    align-items:flex-start;
 
-height:100vh;
+    min-height:100vh;
 
-background:#f6f8fb;
+    background:#f6f8fb;
+
+    padding:40px 20px;
 
 }
 
 .login-card{
-
-width:380px;
-
-background:white;
-
-padding:40px;
-
-border-radius:18px;
-
-box-shadow:0 15px 35px rgba(0,0,0,.08);
-
-display:flex;
-
-flex-direction:column;
-
-gap:18px;
-
+    width:420px;
+    background:#fff;
+    border-radius:20px;
+    padding:40px;
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
 }
 
 .login-card h1{
+    text-align:center;
+    color:#2563eb;
+    font-size:48px;
+    margin-bottom:10px;
+}
 
-text-align:center;
+.login-card > p{
+    text-align:center;
+    color:#6b7280;
+    margin-bottom:30px;
+    font-size:18px;
+}
 
-color:#2563eb;
+.login-card form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
 
 }
 
-.login-card p{
+.input-group{
+    margin-bottom:18px;
+}
 
-text-align:center;
+.input-group input{
+    width:100%;
+    padding:14px 16px;
+    border:1px solid #d1d5db;
+    border-radius:12px;
+    font-size:16px;
+    outline:none;
+    transition:.2s;
+}
 
-color:#6b7280;
+.input-group input:focus{
+    border-color:#2563eb;
+}
 
-margin-bottom:10px;
+.input-wrapper{
+
+    position:relative;
+
+    width:100%;
 
 }
 
-.login-card input{
+.input-wrapper input{
+    padding-right:50px;
+}
 
-padding:14px;
+.toggle-password{
+    position:absolute;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#6b7280;
+    cursor:pointer;
+    font-size:18px;
+}
 
-border:1px solid #d1d5db;
+.validation-message{
 
-border-radius:10px;
+    display:block;
 
-font-size:15px;
+    width:100%;
 
-outline:none;
+    min-height:20px;
+
+    margin-top:8px;
+
+    margin-left:4px;
+
+    font-size:13px;
+
+    font-weight:500;
 
 }
 
-.login-card input:focus{
+.validation-success{
 
-border-color:#2563eb;
+    color:#16a34a;
+
+    font-weight:600;
 
 }
 
+.validation-error{
+
+    color:#dc2626;
+
+    font-weight:600;
+
+}
+
+.password-checklist{
+
+    margin-top:12px;
+    margin-bottom:25px;
+
+    padding:15px;
+
+    background:#f9fafb;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:12px;
+
+}
+
+.password-checklist div{
+
+    margin-bottom:10px;
+
+    font-size:15px;
+
+}
+
+.password-checklist .valid{
+
+    color:#16a34a;
+
+}
+
+.password-checklist .invalid{
+
+    color:#dc2626;
+
+}
 .login-card button{
 
-padding:14px;
+    width:100%;
 
-background:#2563eb;
+    padding:15px;
 
-border:none;
+    border:none;
 
-color:white;
+    border-radius:12px;
 
-border-radius:10px;
+    font-size:17px;
 
-cursor:pointer;
+    font-weight:600;
 
-font-size:16px;
+    transition:.25s;
 
-transition:.3s;
+}
+.login-card button:disabled{
+
+    background:#374151 !important;
+
+    color:white;
+
+    cursor:not-allowed;
+
+    opacity:.9;
 
 }
 
-.login-card button:hover{
+.login-card button:not(:disabled){
 
-background:#1d4ed8;
+    background:#2563eb;
+
+    color:white;
+
+}
+
+.login-card button:not(:disabled):hover{
+
+    background:#1d4ed8;
+
+}
+
+.login-card a{
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.login-card a:hover{
+    text-decoration:underline;
+}
+/* ===========================
+   Form Validation
+=========================== */
+
+.input-group{
+
+    width:100%;
+
+    display:block;
+
+    margin-bottom:22px;
+
+}
+
+.input-group input{
+
+    width:100%;
+
+}
+
+.input-wrapper{
+
+    position:relative;
+
+    width:100%;
+
+}
+
+.input-wrapper input{
+    width:100%;
+    padding-right:45px;
+}
+
+.toggle-password{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#6b7280;
+    font-size:18px;
+    user-select:none;
+}
+
+.validation-message{
+
+    display:block;
+
+    width:100%;
+
+    min-height:20px;
+
+    margin-top:8px;
+
+    margin-left:4px;
+
+    font-size:13px;
+
+    font-weight:500;
+
+}
+
+.validation-success{
+
+    color:#16a34a;
+
+    font-weight:600;
+
+}
+
+.validation-error{
+
+    color:#dc2626;
+
+    font-weight:600;
+
+}
+
+/* ===========================
+   Password Checklist
+=========================== */
+
+
+/* ---------- Input Group ---------- */
+
+.input-group{
+    margin-bottom:18px;
+}
+
+/* ---------- Validation Messages ---------- */
+
+.validation-message{
+
+    display:block;
+
+    width:100%;
+
+    min-height:20px;
+
+    margin-top:8px;
+
+    margin-left:4px;
+
+    font-size:13px;
+
+    font-weight:500;
+
+}
+
+.validation-success{
+
+    color:#16a34a;
+
+    font-weight:600;
+
+}
+
+.validation-error{
+
+    color:#dc2626;
+
+    font-weight:600;
+
+}
+.alert{
+
+    padding:14px;
+
+    border-radius:12px;
+
+    margin-bottom:20px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    text-align:center;
+
+}
+
+.alert-error{
+
+    background:#fef2f2;
+
+    color:#b91c1c;
+
+    border:1px solid #fecaca;
+
+}
+
+.alert-success{
+
+    background:#ecfdf5;
+
+    color:#15803d;
+
+    border:1px solid #bbf7d0;
 
 }

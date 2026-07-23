@@ -36,55 +36,102 @@ if (isset($_SESSION["success"])) {
 
     <link rel="stylesheet" href="assets/css/style.css">
 
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
 </head>
 
 <body class="login-page">
 
-    <div class="login-card">
+<div class="login-card">
 
-        <h1>RAG CHATBOT</h1>
+    <h1>RAG CHATBOT</h1>
 
-        <p>Login to continue</p>
+    <p>Login to continue</p>
 
-        <?php if (!empty($error)): ?>
-            <p style="color:red; text-align:center; margin-bottom:15px;">
-                <?= htmlspecialchars($error) ?>
-            </p>
-        <?php endif; ?>
+    <?php if (!empty($error)): ?>
+        <p class="validation-error">
+            <?= htmlspecialchars($error) ?>
+        </p>
+    <?php endif; ?>
 
-        <?php if (!empty($success)): ?>
-            <p style="color:green; text-align:center; margin-bottom:15px;">
-                <?= htmlspecialchars($success) ?>
-            </p>
-        <?php endif; ?>
+    <?php if (!empty($success)): ?>
+        <p class="validation-success">
+            <?= htmlspecialchars($success) ?>
+        </p>
+    <?php endif; ?>
 
-        <!-- Login Form -->
-        <form action="actions/login_action.php" method="POST">
+    <form action="actions/login_action.php" method="POST">
+
+        <!-- Email -->
+
+        <div class="input-group">
 
             <input
+                id="email"
                 type="email"
                 name="email"
                 placeholder="Email Address"
                 required>
 
-            <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required>
+            <small
+                id="emailMessage"
+                class="validation-message">
+            </small>
 
-            <button type="submit">
-                Login
-            </button>
+        </div>
 
-        </form>
+        <!-- Password -->
 
-        <p style="margin-top:15px; text-align:center;">
-            New User?
-            <a href="register.php">Register Here</a>
-        </p>
+        <div class="input-group">
 
-    </div>
+            <div class="input-wrapper">
+
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required>
+
+                <i
+                    id="togglePassword"
+                    class="fa-solid fa-eye toggle-password">
+                </i>
+
+            </div>
+
+            <small
+                id="passwordMessage"
+                class="validation-message">
+            </small>
+
+        </div>
+
+        <button
+            id="loginBtn"
+            type="submit"
+            disabled>
+
+            Login
+
+        </button>
+
+    </form>
+
+    <p style="margin-top:20px;">
+
+        New User?
+
+        <a href="register.php">
+            Register Here
+        </a>
+
+    </p>
+
+</div>
+
+<script src="assets/js/login.js"></script>
 
 </body>
 
