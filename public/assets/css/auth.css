@@ -1,0 +1,343 @@
+/* ==========================================
+   Login / Register Page
+========================================== */
+
+body{
+    margin:0;
+    padding:0;
+    font-family:'Inter',sans-serif;
+}
+
+.login-page{
+
+    background:#f6f8fb;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    padding:40px 20px;
+
+    overflow-y:auto;
+
+}
+
+.login-card{
+
+    width:430px;
+
+    background:#fff;
+
+    border-radius:20px;
+
+    padding:40px;
+
+    box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+    margin-bottom:40px;
+
+}
+
+.login-card h1{
+
+    color:#2563eb;
+
+    text-align:center;
+
+    font-size:52px;
+
+    margin-bottom:15px;
+
+}
+
+.login-card>p{
+
+    text-align:center;
+
+    color:#6b7280;
+
+    font-size:18px;
+
+    margin-bottom:30px;
+
+}
+
+.login-card form{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+/* ==========================================
+   Input Group
+========================================== */
+
+.input-group{
+
+    width:100%;
+
+    margin-bottom:22px;
+
+}
+
+.input-group input,
+.input-wrapper input{
+
+    width:100%;
+
+    height:58px;
+
+    padding:0 50px 0 18px;
+
+    font-size:17px;
+
+    border:1px solid #d1d5db;
+
+    border-radius:16px;
+
+    outline:none;
+
+    box-sizing:border-box;
+
+    transition:all .25s ease;
+
+    background:#fff;
+
+}
+
+/* Focus Effect */
+
+.input-group input:focus,
+.input-wrapper input:focus{
+
+    border-color:#2563eb;
+
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+
+}
+
+/* ==========================================
+   Password Wrapper
+========================================== */
+
+.input-wrapper{
+
+    position:relative;
+
+    width:100%;
+
+}
+
+/* Eye Icon */
+
+.toggle-password{
+
+    position:absolute;
+
+    right:18px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#6b7280;
+
+    cursor:pointer;
+
+    font-size:20px;
+
+    transition:.2s;
+
+}
+
+.toggle-password:hover{
+
+    color:#2563eb;
+
+}
+
+/* ==========================================
+   Validation Messages
+========================================== */
+
+.validation-message{
+
+    display:block;
+
+    min-height:22px;
+
+    margin-top:8px;
+
+    margin-left:4px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.validation-success{
+
+    color:#16a34a;
+
+}
+
+.validation-error{
+
+    color:#dc2626;
+
+}
+
+/* ==========================================
+   Password Checklist
+========================================== */
+
+.password-checklist{
+
+    margin-top:-8px;
+
+    margin-bottom:25px;
+
+    padding:15px;
+
+    background:#f9fafb;
+
+    border:1px solid #e5e7eb;
+
+    border-radius:12px;
+
+}
+
+.password-checklist div{
+
+    margin-bottom:10px;
+
+    font-size:15px;
+
+}
+
+.password-checklist .valid{
+
+    color:#16a34a;
+
+}
+
+.password-checklist .invalid{
+
+    color:#dc2626;
+
+}
+
+/* ==========================================
+   Buttons
+========================================== */
+
+.login-card button{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+.login-card button:disabled{
+
+    background:#4b5563;
+
+    color:white;
+
+    cursor:not-allowed;
+
+}
+
+.login-card button:not(:disabled){
+
+    background:#2563eb;
+
+    color:white;
+
+    cursor:pointer;
+
+}
+
+.login-card button:not(:disabled):hover{
+
+    background:#1d4ed8;
+
+}
+
+/* ==========================================
+   Alerts
+========================================== */
+
+.alert{
+
+    padding:14px;
+
+    margin-bottom:20px;
+
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.alert-error{
+
+    background:#fef2f2;
+
+    color:#b91c1c;
+
+    border:1px solid #fecaca;
+
+}
+
+.alert-success{
+
+    background:#ecfdf5;
+
+    color:#15803d;
+
+    border:1px solid #bbf7d0;
+
+}
+
+/* ==========================================
+   Links
+========================================== */
+
+.login-card a{
+
+    color:#2563eb;
+
+    text-decoration:none;
+
+    font-weight:600;
+
+}
+
+.login-card a:hover{
+
+    text-decoration:underline;
+
+}

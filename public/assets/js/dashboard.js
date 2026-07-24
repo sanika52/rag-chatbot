@@ -10,76 +10,62 @@ const sendBtn = document.getElementById("sendBtn");
 const question = document.getElementById("question");
 const chatBox = document.getElementById("chatBox");
 
-// ============================
-// Variables
-// ============================
-
-let uploadedFile = null;
-let uploaded = false;
+const profileBtn = document.getElementById("profileBtn");
+const profileDropdown = document.getElementById("profileDropdown");
 
 // ============================
 // File Selection
 // ============================
 
-fileInput.addEventListener("change", function () {
+if (fileInput) {
 
-    if (fileInput.files.length > 0) {
+    fileInput.addEventListener("change", function () {
 
-        uploadedFile = fileInput.files[0];
+        if (fileInput.files.length > 0) {
 
-        fileName.innerHTML = "📄 " + uploadedFile.name;
+            fileName.innerHTML = "📄 " + fileInput.files[0].name;
 
-    } else {
+        }
 
-        uploadedFile = null;
+        else {
 
-        fileName.innerHTML = "No file selected";
+            fileName.innerHTML = "No file selected";
 
-    }
+        }
 
-});
+    });
 
-// ============================
-// Upload Button
-// ============================
-
-uploadBtn.addEventListener("click", function () {
-
-    if (!uploadedFile) {
-
-        alert("Please choose a document first.");
-
-        return;
-
-    }
-
-    uploaded = true;
-
-    addBotMessage("✅ <b>" + uploadedFile.name + "</b> uploaded successfully.");
-
-});
+}
 
 // ============================
 // Send Button
 // ============================
 
-sendBtn.addEventListener("click", sendMessage);
+if (sendBtn) {
+
+    sendBtn.addEventListener("click", sendMessage);
+
+}
 
 // ============================
 // Enter Key
 // ============================
 
-question.addEventListener("keypress", function (event) {
+if (question) {
 
-    if (event.key === "Enter" && !event.shiftKey) {
+    question.addEventListener("keypress", function (event) {
 
-        event.preventDefault();
+        if (event.key === "Enter" && !event.shiftKey) {
 
-        sendMessage();
+            event.preventDefault();
 
-    }
+            sendMessage();
 
-});
+        }
+
+    });
+
+}
 
 // ============================
 // Send Message
@@ -97,19 +83,12 @@ function sendMessage() {
 
     setTimeout(function () {
 
-        if (!uploaded) {
+        addBotMessage(
+            "🤖 <strong>AI backend is not connected yet.</strong><br><br>" +
+            "Once the Python RAG service is integrated, I'll answer questions from your uploaded document."
+        );
 
-            addBotMessage("⚠ Please upload your document first.");
-
-        }
-
-        else {
-
-            addBotMessage("🤖 Backend not connected yet.<br><br>After Python integration I'll answer only from your uploaded document.");
-
-        }
-
-    },600);
+    }, 600);
 
 }
 
@@ -117,13 +96,13 @@ function sendMessage() {
 // User Message
 // ============================
 
-function addUserMessage(message){
+function addUserMessage(message) {
 
-    const div=document.createElement("div");
+    const div = document.createElement("div");
 
-    div.className="user-message";
+    div.className = "user-message";
 
-    div.innerHTML=message;
+    div.innerHTML = message;
 
     chatBox.appendChild(div);
 
@@ -135,13 +114,13 @@ function addUserMessage(message){
 // Bot Message
 // ============================
 
-function addBotMessage(message){
+function addBotMessage(message) {
 
-    const div=document.createElement("div");
+    const div = document.createElement("div");
 
-    div.className="bot-message";
+    div.className = "bot-message";
 
-    div.innerHTML=message;
+    div.innerHTML = message;
 
     chatBox.appendChild(div);
 
@@ -150,11 +129,40 @@ function addBotMessage(message){
 }
 
 // ============================
+// Profile Dropdown
+// ============================
+
+if (profileBtn && profileDropdown) {
+
+    profileBtn.addEventListener("click", function (event) {
+
+        event.stopPropagation();
+
+        profileDropdown.classList.toggle("show");
+
+    });
+
+    document.addEventListener("click", function (event) {
+
+        if (
+            !profileBtn.contains(event.target) &&
+            !profileDropdown.contains(event.target)
+        ) {
+
+            profileDropdown.classList.remove("show");
+
+        }
+
+    });
+
+}
+
+// ============================
 // Auto Scroll
 // ============================
 
-function scrollBottom(){
+function scrollBottom() {
 
-    chatBox.scrollTop=chatBox.scrollHeight;
+    chatBox.scrollTop = chatBox.scrollHeight;
 
 }

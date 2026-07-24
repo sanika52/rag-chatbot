@@ -222,6 +222,12 @@ body{
 
 .chat-header{
 
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
     padding:25px 35px;
 
     background:white;
@@ -230,7 +236,7 @@ body{
 
 }
 
-.chat-header h2{
+.header-left h2{
 
     font-size:28px;
 
@@ -238,11 +244,242 @@ body{
 
 }
 
-.chat-header p{
+.header-left p{
 
     margin-top:5px;
 
     color:#6b7280;
+
+}
+
+/* ===========================
+   Profile Menu
+=========================== */
+
+.profile-menu{
+
+    position:relative;
+
+}
+
+.profile-btn{
+
+    width:50px;
+
+    height:50px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:#fff;
+
+    font-size:22px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.profile-btn:hover{
+
+    transform:scale(1.05);
+
+}
+
+.profile-dropdown{
+
+    position:absolute;
+
+    top:65px;
+
+    right:0;
+
+    width:260px;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
+
+    overflow:hidden;
+
+    display:none;
+
+    animation:fadeDown .2s ease;
+
+    z-index:1000;
+
+}
+
+.profile-dropdown.show{
+
+    display:block;
+
+}
+
+.profile-info{
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+}
+
+.profile-info strong{
+
+    font-size:17px;
+
+    color:#111827;
+
+}
+
+.profile-dropdown hr{
+
+    border:none;
+
+    border-top:1px solid #e5e7eb;
+
+    margin:10px 0;
+
+}
+
+.profile-dropdown a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    text-decoration:none;
+
+    color:#374151;
+
+    padding:10px;
+
+    border-radius:8px;
+
+    transition:.25s;
+
+}
+
+.profile-dropdown a:hover{
+
+    background:#f3f4f6;
+
+    color:#dc2626;
+
+}
+.profile-header{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    padding:24px 20px 18px;
+
+    background:#f8fafc;
+
+}
+
+.profile-avatar{
+
+    width:62px;
+
+    height:62px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+    margin-bottom:12px;
+
+}
+
+.profile-name{
+
+    font-size:20px;
+
+    font-weight:600;
+
+    color:#111827;
+
+}
+
+.profile-email{
+
+    color:#6b7280;
+
+    font-size:14px;
+
+    margin-top:4px;
+
+}
+.profile-dropdown a{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:16px 22px;
+
+    text-decoration:none;
+
+    color:#374151;
+
+    font-size:17px;
+
+    transition:.2s;
+
+}
+
+.profile-dropdown a:hover{
+
+    background:#eff6ff;
+
+    color:#2563eb;
+
+}
+@keyframes fadeDown{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(-10px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
 
 }
 
@@ -308,6 +545,77 @@ body{
 
     margin-bottom:18px;
 
+}
+
+/* ==========================================
+   Uploaded Document Card
+========================================== */
+
+.uploaded-document{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    gap:18px;
+
+    padding:18px;
+
+    margin-bottom:16px;
+
+    border:2px solid #e5e7eb;
+    border-radius:18px;
+
+    background:#fff;
+
+    transition:0.25s;
+    padding: 16px 18px;
+}
+
+.document-icon i{
+    font-size: 20px;
+    color: white;
+}
+
+.document-info{
+
+    flex:1;
+
+}
+
+.document-name{
+
+    font-size:18px;
+
+    font-weight:600;
+
+    color:#111827;
+
+    margin-bottom:6px;
+
+    word-break:break-word;
+}
+
+.document-meta{
+
+    font-size:15px;
+
+    color:#6b7280;
+
+    margin-bottom:6px;
+}
+
+.document-status{
+
+    display:flex;
+    align-items:center;
+
+    gap:8px;
+
+    font-size:15px;
+
+    color:#16a34a;
+
+    font-weight:600;
 }
 
 /* ===========================
@@ -433,373 +741,91 @@ width:100%;
 }
 
 }
-/* ===========================
-   Login / Register Page
-=========================== */
-.login-page{
 
+.active-document {
+    border: 2px solid #2563eb;
+    background: #f8fbff;
+}
+
+.uploaded-documents h2{
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    margin-top: 24px;
+}
+
+.document-button{
+    width:100%;
     display:flex;
+    align-items:center;
 
-    justify-content:center;
-
-    align-items:flex-start;
-
-    min-height:100vh;
-
-    background:#f6f8fb;
-
-    padding:40px 20px;
-
-}
-
-.login-card{
-    width:420px;
-    background:#fff;
-    border-radius:20px;
-    padding:40px;
-    box-shadow:0 12px 35px rgba(0,0,0,.08);
-}
-
-.login-card h1{
-    text-align:center;
-    color:#2563eb;
-    font-size:48px;
-    margin-bottom:10px;
-}
-
-.login-card > p{
-    text-align:center;
-    color:#6b7280;
-    margin-bottom:30px;
-    font-size:18px;
-}
-
-.login-card form{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
-}
-
-.input-group{
-    margin-bottom:18px;
-}
-
-.input-group input{
-    width:100%;
-    padding:14px 16px;
-    border:1px solid #d1d5db;
-    border-radius:12px;
-    font-size:16px;
-    outline:none;
-    transition:.2s;
-}
-
-.input-group input:focus{
-    border-color:#2563eb;
-}
-
-.input-wrapper{
-
-    position:relative;
-
-    width:100%;
-
-}
-
-.input-wrapper input{
-    padding-right:50px;
-}
-
-.toggle-password{
-    position:absolute;
-    right:16px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#6b7280;
-    cursor:pointer;
-    font-size:18px;
-}
-
-.validation-message{
-
-    display:block;
-
-    width:100%;
-
-    min-height:20px;
-
-    margin-top:8px;
-
-    margin-left:4px;
-
-    font-size:13px;
-
-    font-weight:500;
-
-}
-
-.validation-success{
-
-    color:#16a34a;
-
-    font-weight:600;
-
-}
-
-.validation-error{
-
-    color:#dc2626;
-
-    font-weight:600;
-
-}
-
-.password-checklist{
-
-    margin-top:12px;
-    margin-bottom:25px;
-
-    padding:15px;
-
-    background:#f9fafb;
-
-    border:1px solid #e5e7eb;
-
-    border-radius:12px;
-
-}
-
-.password-checklist div{
-
-    margin-bottom:10px;
-
-    font-size:15px;
-
-}
-
-.password-checklist .valid{
-
-    color:#16a34a;
-
-}
-
-.password-checklist .invalid{
-
-    color:#dc2626;
-
-}
-.login-card button{
-
-    width:100%;
-
-    padding:15px;
+    gap:18px;
 
     border:none;
-
-    border-radius:12px;
-
-    font-size:17px;
-
-    font-weight:600;
-
-    transition:.25s;
-
-}
-.login-card button:disabled{
-
-    background:#374151 !important;
-
-    color:white;
-
-    cursor:not-allowed;
-
-    opacity:.9;
-
-}
-
-.login-card button:not(:disabled){
-
-    background:#2563eb;
-
-    color:white;
-
-}
-
-.login-card button:not(:disabled):hover{
-
-    background:#1d4ed8;
-
-}
-
-.login-card a{
-    color:#2563eb;
-    text-decoration:none;
-    font-weight:500;
-}
-
-.login-card a:hover{
-    text-decoration:underline;
-}
-/* ===========================
-   Form Validation
-=========================== */
-
-.input-group{
-
-    width:100%;
-
-    display:block;
-
-    margin-bottom:22px;
-
-}
-
-.input-group input{
-
-    width:100%;
-
-}
-
-.input-wrapper{
-
-    position:relative;
-
-    width:100%;
-
-}
-
-.input-wrapper input{
-    width:100%;
-    padding-right:45px;
-}
-
-.toggle-password{
-    position:absolute;
-    right:15px;
-    top:50%;
-    transform:translateY(-50%);
+    background:transparent;
     cursor:pointer;
-    color:#6b7280;
-    font-size:18px;
-    user-select:none;
+
+    padding:0;
+    text-align:left;
 }
 
-.validation-message{
-
-    display:block;
-
-    width:100%;
-
-    min-height:20px;
-
-    margin-top:8px;
-
-    margin-left:4px;
-
-    font-size:13px;
-
-    font-weight:500;
-
+.document-button:hover .uploaded-document {
+    transform: translateY(-2px);
 }
-
-.validation-success{
-
-    color:#16a34a;
-
-    font-weight:600;
-
+.document-form {
+    flex: 1;
 }
+.active-document {
+    border: 2px solid #2563eb;
+    background: #eff6ff;
+}
+.document-info {
+    flex: 1;
+}
+.active-label {
 
-.validation-error{
+    margin-left: 8px;
+
+    color: #2563eb;
+
+    font-weight: 600;
+
+    font-size: 13px;
+}
+.delete-form{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.delete-btn{
+
+    width:42px;
+    height:42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border:none;
+    background:transparent;
+
+    border-radius:10px;
 
     color:#dc2626;
 
-    font-weight:600;
+    cursor:pointer;
 
+    transition:.2s;
 }
+.delete-btn:hover {
 
-/* ===========================
-   Password Checklist
-=========================== */
-
-
-/* ---------- Input Group ---------- */
-
-.input-group{
-    margin-bottom:18px;
+    background: #fee2e2;
 }
+.delete-btn i {
 
-/* ---------- Validation Messages ---------- */
-
-.validation-message{
-
-    display:block;
-
-    width:100%;
-
-    min-height:20px;
-
-    margin-top:8px;
-
-    margin-left:4px;
-
-    font-size:13px;
-
-    font-weight:500;
-
+    font-size: 16px;
 }
+.uploaded-document:hover {
 
-.validation-success{
-
-    color:#16a34a;
-
-    font-weight:600;
-
-}
-
-.validation-error{
-
-    color:#dc2626;
-
-    font-weight:600;
-
-}
-.alert{
-
-    padding:14px;
-
-    border-radius:12px;
-
-    margin-bottom:20px;
-
-    font-size:15px;
-
-    font-weight:600;
-
-    text-align:center;
-
-}
-
-.alert-error{
-
-    background:#fef2f2;
-
-    color:#b91c1c;
-
-    border:1px solid #fecaca;
-
-}
-
-.alert-success{
-
-    background:#ecfdf5;
-
-    color:#15803d;
-
-    border:1px solid #bbf7d0;
-
+    border-color: #2563eb;
 }
