@@ -1,0 +1,42 @@
+rag-chatbot/
+│
+├── actions/
+│   ├── login_action.php
+│   ├── register_action.php
+│   ├── logout_action.php
+│   ├── upload_action.php
+│
+├── api/
+│   └── chat.php
+│
+├── assets/
+│   ├── css/
+│   │      style.css
+│   ├── js/
+│   │      script.js
+│   └── images/
+│
+├── config/
+│   └── database.php
+│
+├── includes/
+│   ├── auth.php
+│   ├── header.php
+│   ├── footer.php
+│   └── functions.php
+│
+├── public/
+│   ├── index.php
+│   ├── login.php
+│   ├── register.php
+│   ├── dashboard.php
+│   └── logout.php
+│
+├── python_service/
+│
+├── sql/
+│
+├── uploads/
+│
+├── README.md
+└── .gitignore

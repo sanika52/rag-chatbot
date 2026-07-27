@@ -64,19 +64,7 @@ if (!move_uploaded_file($file["tmp_name"], $destination)) {
     exit;
 }
 
-// Make all previously uploaded documents inactive
 
-$deactivateSql = "
-UPDATE uploaded_files
-SET is_active = FALSE
-WHERE user_id = :user_id
-";
-
-$deactivateStmt = $pdo->prepare($deactivateSql);
-
-$deactivateStmt->execute([
-    "user_id" => $_SESSION["user_id"]
-]);
 
 // Save metadata in database
 $sql = "
@@ -87,8 +75,7 @@ INSERT INTO uploaded_files
     stored_filename,
     file_size,
     file_type,
-    status,
-    is_active
+    status
 )
 VALUES
 (
@@ -97,22 +84,35 @@ VALUES
     :stored_filename,
     :file_size,
     :file_type,
-    :status,
-    :is_active
+    :status
 )
 ";
 
 $stmt = $pdo->prepare($sql);
-
 $stmt->execute([
     "user_id"           => $_SESSION["user_id"],
     "original_filename" => $file["name"],
     "stored_filename"   => $storedFileName,
     "file_size"         => $file["size"],
     "file_type"         => strtoupper($extension),
-    "status"            => "Ready",
-    "is_active"         => true
+    "status"            => "Ready"
 ]);
+
+/*
+|--------------------------------------------------------------------------
+| Automatically select the newly uploaded document
+|--------------------------------------------------------------------------
+*/
+
+$newDocumentId = $pdo->lastInsertId();
+
+if (!isset($_SESSION["selected_documents"])) {
+    $_SESSION["selected_documents"] = [];
+}
+
+if (!in_array($newDocumentId, $_SESSION["selected_documents"])) {
+    $_SESSION["selected_documents"][] = (int) $newDocumentId;
+}
 
 $_SESSION["success"] = "Document uploaded successfully.";
 

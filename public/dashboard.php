@@ -36,6 +36,16 @@ $stmt->execute([$_SESSION["user_id"]]);
 
 $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+/*
+|--------------------------------------------------------------------------
+| Selected documents (Session)
+|--------------------------------------------------------------------------
+*/
+
+if (!isset($_SESSION["selected_documents"])) {
+    $_SESSION["selected_documents"] = [];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -106,7 +116,7 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <p>
 
-                Upload your PDF, DOCX or TXT document and ask questions from it.
+                Upload your PDF, DOCX or TXT documents and ask questions from them.
 
             </p>
 
@@ -119,11 +129,11 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <?php foreach ($documents as $document): ?>
 
-        <div class="uploaded-document <?= $document["is_active"] ? 'active-document' : '' ?>">
+        <div class="uploaded-document <?= in_array($document["id"], $_SESSION["selected_documents"]) ? 'selected-document' : '' ?>">
 
             <!-- Make document active -->
             <form
-                action="actions/set_active_document.php"
+                action="actions/toggle_selection.php"
                 method="POST"
                 class="document-form">
 
@@ -173,14 +183,13 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                             <?= htmlspecialchars($document["status"]) ?>
 
-                            <?php if ($document["is_active"]): ?>
+                            <?php if (in_array($document["id"], $_SESSION["selected_documents"])): ?>
 
-                                <span class="active-label">
+                               <span class="selected-label">
 
-                                    Active
+                                  Selected
 
-                                </span>
-
+                               </span>
                             <?php endif; ?>
 
                         </div>
@@ -343,11 +352,11 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="header-left">
 
-                <h2>Document Chat</h2>
+                <h2>Chat with Documents</h2>
 
                 <p>
 
-                    Ask anything related to your uploaded document.
+                    Ask anything related to your uploaded documents.
 
                 </p>
 
@@ -429,7 +438,7 @@ $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                     <br><br>
 
-                    Select the active document (if needed) and start asking questions.
+                    Select one or more documents and start asking questions.
 
                 <?php else: ?>
 

@@ -23,8 +23,7 @@ CREATE TABLE uploaded_files (
 
     file_type VARCHAR(20) NOT NULL,
 
-    is_active BOOLEAN NOT NULL DEFAULT FALSE,
-    
+
     status VARCHAR(20) NOT NULL DEFAULT 'Ready',
 
     upload_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

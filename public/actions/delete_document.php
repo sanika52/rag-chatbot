@@ -63,35 +63,15 @@ $stmt->execute([$documentId]);
 
 /*
 |--------------------------------------------------------------------------
-| If deleted document was active,
-| make the newest remaining document active
+| Remove document from selected documents session
 |--------------------------------------------------------------------------
 */
 
-if ($document["is_active"]) {
+if (isset($_SESSION["selected_documents"])) {
 
-    $stmt = $pdo->prepare("
-        SELECT id
-        FROM uploaded_files
-        WHERE user_id = ?
-        ORDER BY upload_time DESC
-        LIMIT 1
-    ");
-
-    $stmt->execute([$userId]);
-
-    $nextDocument = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($nextDocument) {
-
-        $stmt = $pdo->prepare("
-            UPDATE uploaded_files
-            SET is_active = TRUE
-            WHERE id = ?
-        ");
-
-        $stmt->execute([$nextDocument["id"]]);
-    }
+    $_SESSION["selected_documents"] = array_values(
+        array_diff($_SESSION["selected_documents"], [$documentId])
+    );
 }
 
 $_SESSION["success"] = "Document deleted successfully.";

@@ -742,7 +742,7 @@ width:100%;
 
 }
 
-.active-document {
+.selected-document {
     border: 2px solid #2563eb;
     background: #f8fbff;
 }
@@ -775,14 +775,14 @@ width:100%;
 .document-form {
     flex: 1;
 }
-.active-document {
+.selected-document {
     border: 2px solid #2563eb;
     background: #eff6ff;
 }
 .document-info {
     flex: 1;
 }
-.active-label {
+.selected-label {
 
     margin-left: 8px;
 
