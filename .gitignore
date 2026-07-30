@@ -1,0 +1,27 @@
+# Python
+python_service/venv/
+**/__pycache__/
+python_service/.env
+
+
+# PHP uploads (optional)
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code (optional)
+.vscode/
+
+# ChromaDB
+python_service/chroma_db/
+
+# Test files
+sample.pdf
+test_hf.py
+download_model.py
+
+# Python cache
+*.pyc
+*.pyo

@@ -106,6 +106,27 @@ $stmt->execute([
 
 $newDocumentId = $pdo->lastInsertId();
 
+$apiData = [
+    "file_path"   => realpath($destination),
+    "document_id" => (int)$newDocumentId,
+    "user_id"     => (int)$_SESSION["user_id"],
+    "filename"    => $file["name"]
+];
+
+$url = "http://127.0.0.1:8000/process-document";
+
+$options = [
+    "http" => [
+        "header"  => "Content-Type: application/json",
+        "method"  => "POST",
+        "content" => json_encode($apiData)
+    ]
+];
+
+$context = stream_context_create($options);
+
+$response = @file_get_contents($url, false, $context);
+
 if (!isset($_SESSION["selected_documents"])) {
     $_SESSION["selected_documents"] = [];
 }
