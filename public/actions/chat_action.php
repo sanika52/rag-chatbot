@@ -2,6 +2,18 @@
 
 require_once "../../includes/auth.php";
 require_once "../../config/app.php";
+require_once "../../config/database.php";
+
+/*
+|--------------------------------------------------------------------------
+| Keep running this script to completion even if the browser
+| disconnects, refreshes, or navigates away mid-request.
+| This prevents the "user message saved, assistant answer never
+| written" bug caused by PHP killing execution on client disconnect.
+|--------------------------------------------------------------------------
+*/
+
+ignore_user_abort(true);
 
 header("Content-Type: application/json");
 
@@ -29,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] !== "POST") {
 |--------------------------------------------------------------------------
 */
 
-$data = json_decode(file_get_contents("php://input"), true);
+$requestData = json_decode(file_get_contents("php://input"), true);
 
 /*
 |--------------------------------------------------------------------------
@@ -37,7 +49,7 @@ $data = json_decode(file_get_contents("php://input"), true);
 |--------------------------------------------------------------------------
 */
 
-$question = trim($data["question"] ?? "");
+$question = trim($requestData["question"] ?? "");
 
 if ($question === "") {
 
@@ -66,6 +78,82 @@ if (
     ]);
 
     exit();
+}
+
+/*
+|--------------------------------------------------------------------------
+| Get or create conversation
+|--------------------------------------------------------------------------
+*/
+
+$stmt = $pdo->prepare("
+    SELECT id
+    FROM conversations
+    WHERE user_id = ?
+    ORDER BY created_at DESC
+    LIMIT 1
+");
+
+$stmt->execute([
+    $_SESSION["user_id"]
+]);
+
+$conversation = $stmt->fetch();
+
+if ($conversation) {
+
+    $conversationId = (int) $conversation["id"];
+
+} else {
+
+    $stmt = $pdo->prepare("
+        INSERT INTO conversations (user_id)
+        VALUES (?)
+    ");
+
+    $stmt->execute([
+        $_SESSION["user_id"]
+    ]);
+
+    $conversationId = (int) $pdo->lastInsertId();
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| Prevent duplicate submission of the same question in quick
+| succession (e.g. accidental double Enter/click, or a retried
+| request). If the very last message in this conversation is a
+| user message with the exact same text, reject this one instead
+| of inserting a second copy.
+|--------------------------------------------------------------------------
+*/
+
+$stmt = $pdo->prepare("
+    SELECT role, message
+    FROM chat_messages
+    WHERE conversation_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+");
+
+$stmt->execute([$conversationId]);
+
+$lastMessage = $stmt->fetch();
+
+if (
+    $lastMessage &&
+    $lastMessage["role"] === "user" &&
+    $lastMessage["message"] === $question
+) {
+
+    echo json_encode([
+        "success" => false,
+        "message" => "This question is already being processed."
+    ]);
+
+    exit();
+
 }
 
 /*
@@ -146,30 +234,69 @@ if ($httpStatus !== 200) {
 |--------------------------------------------------------------------------
 */
 
-$data = json_decode($response, true);
+$responseData = json_decode($response, true);
 
 /*
 |--------------------------------------------------------------------------
-| Store chat history in session
+| Validate that FastAPI actually returned an answer before writing
+| anything to the DB. Prevents saving a user question with no
+| matching assistant reply if FastAPI sends 200 with a malformed body.
 |--------------------------------------------------------------------------
 */
 
-if (!isset($_SESSION["chat_history"])) {
+if (!isset($responseData["answer"])) {
 
-    $_SESSION["chat_history"] = [];
+    echo json_encode([
+        "success" => false,
+        "message" => "The AI service did not return a valid answer."
+    ]);
+
+    exit();
 
 }
 
-$_SESSION["chat_history"][] = [
-    "role" => "user",
-    "message" => $question
-];
+/*
+|--------------------------------------------------------------------------
+| Save user message
+|--------------------------------------------------------------------------
+*/
 
-$_SESSION["chat_history"][] = [
-    "role" => "assistant",
-    "message" => $data["answer"],
-    "sources" => $data["sources"]
-];
+$stmt = $pdo->prepare("
+    INSERT INTO chat_messages
+    (
+        conversation_id,
+        role,
+        message,
+        sources
+    )
+    VALUES
+    (
+        ?,
+        ?,
+        ?,
+        ?
+    )
+");
+
+$stmt->execute([
+    $conversationId,
+    "user",
+    $question,
+    null
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Save assistant message
+|--------------------------------------------------------------------------
+*/
+
+$stmt->execute([
+    $conversationId,
+    "assistant",
+    $responseData["answer"],
+    json_encode($responseData["sources"] ?? [])
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -177,4 +304,6 @@ $_SESSION["chat_history"][] = [
 |--------------------------------------------------------------------------
 */
 
-echo json_encode($data);
+echo json_encode($responseData);
+
+exit();

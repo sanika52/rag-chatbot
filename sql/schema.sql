@@ -35,22 +35,6 @@ CREATE TABLE uploaded_files (
 
 );
 
-CREATE TABLE chat_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-
-    user_id INT NOT NULL,
-
-    question TEXT NOT NULL,
-
-    answer TEXT NOT NULL,
-
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT fk_chat_history_user
-        FOREIGN KEY (user_id)
-        REFERENCES users(id)
-        ON DELETE CASCADE
-);
 
 /*
 |--------------------------------------------------------------------------

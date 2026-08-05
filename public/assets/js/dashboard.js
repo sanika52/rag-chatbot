@@ -14,6 +14,23 @@ const profileBtn = document.getElementById("profileBtn");
 const profileDropdown = document.getElementById("profileDropdown");
 
 // ============================
+// Track in-flight request (used to warn on refresh/close)
+// ============================
+
+let requestInFlight = false;
+
+window.addEventListener("beforeunload", function (event) {
+
+    if (requestInFlight) {
+
+        event.preventDefault();
+        event.returnValue = "";
+
+    }
+
+});
+
+// ============================
 // File Selection
 // ============================
 
@@ -59,7 +76,11 @@ if (question) {
 
             event.preventDefault();
 
-            sendMessage();
+            if (!sendBtn.disabled) {
+
+                sendMessage();
+
+            }
 
         }
 
@@ -76,6 +97,12 @@ async function sendMessage() {
     const message = question.value.trim();
 
     if (message === "") return;
+    if (sendBtn.disabled) {
+        return;
+    }
+
+    sendBtn.disabled = true;
+    requestInFlight = true;
 
     addUserMessage(message);
 
@@ -116,7 +143,8 @@ async function sendMessage() {
                 "❌ " +
                 (data.message || "Something went wrong.")
             );
-
+            sendBtn.disabled = false;
+            requestInFlight = false;
             return;
         }
 
@@ -151,7 +179,8 @@ async function sendMessage() {
         }
 
         addBotMessage(html);
-
+        sendBtn.disabled = false;
+        requestInFlight = false;
     }
 
     catch (error) {
@@ -163,7 +192,8 @@ async function sendMessage() {
         );
 
         console.error(error);
-
+        sendBtn.disabled = false;
+        requestInFlight = false;
     }
 
 }

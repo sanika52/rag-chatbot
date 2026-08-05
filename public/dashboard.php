@@ -36,6 +36,67 @@ $stmt->execute([$_SESSION["user_id"]]);
 
 $documents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+/*
+|--------------------------------------------------------------------------
+| Load latest conversation
+|--------------------------------------------------------------------------
+*/
+
+$stmt = $pdo->prepare("
+    SELECT id
+    FROM conversations
+    WHERE user_id = ?
+    ORDER BY created_at DESC
+    LIMIT 1
+");
+
+$stmt->execute([
+    $_SESSION["user_id"]
+]);
+
+$conversation = $stmt->fetch();
+
+$chatHistory = [];
+
+if ($conversation) {
+
+    $stmt = $pdo->prepare("
+    SELECT
+        id,
+        role,
+        message,
+        sources
+    FROM chat_messages
+    WHERE conversation_id = ?
+    ORDER BY id ASC
+");
+
+    $stmt->execute([
+        $conversation["id"]
+    ]);
+
+    $chatHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+}
+
+foreach ($chatHistory as &$message) {
+
+    if (!empty($message["sources"])) {
+
+        $message["sources"] = json_decode(
+            $message["sources"],
+            true
+        );
+
+    } else {
+
+        $message["sources"] = [];
+
+    }
+
+}
+
 /*
 |--------------------------------------------------------------------------
 | Selected documents (Session)
@@ -417,95 +478,102 @@ if (!isset($_SESSION["selected_documents"])) {
             class="chat-box"
             id="chatBox">
 
-            <?php if (!empty($_SESSION["chat_history"])): ?>
+            <?php if (!empty($chatHistory)): ?>
 
-<?php foreach ($_SESSION["chat_history"] as $message): ?>
+    <?php foreach ($chatHistory as $message): ?>
 
-<?php if ($message["role"] === "user"): ?>
+        <?php if ($message["role"] === "user"): ?>
 
-<div class="user-message">
+            <div class="user-message">
 
-    <?= htmlspecialchars($message["message"]) ?>
+                <?= htmlspecialchars($message["message"]) ?>
 
-</div>
+            </div>
 
-<?php else: ?>
+        <?php else: ?>
+
+            <div class="bot-message">
+
+                <?= nl2br(htmlspecialchars($message["message"])) ?>
+
+                <?php if (!empty($message["sources"])): ?>
+
+                    <br><br>
+
+                    <strong>Sources</strong><br>
+
+                    <?php foreach ($message["sources"] as $source): ?>
+
+                        <?php
+                        $pages = !empty($source["pages"])
+                            ? implode(", ", $source["pages"])
+                            : "";
+                        ?>
+
+                        📄
+
+                        <a
+                            href="view_document.php?document_id=<?= $source["document_id"] ?>"
+                            target="_blank"
+                        >
+                            <?= htmlspecialchars($source["filename"]) ?>
+                        </a>
+
+                        <?php if ($pages): ?>
+
+                            (Pages <?= $pages ?>)
+
+                        <?php endif; ?>
+
+                        <br>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
+
+            </div>
+
+        <?php endif; ?>
+
+    <?php endforeach; ?>
+
+<?php endif; ?>
+
+            <?php if (empty($chatHistory)): ?>
 
 <div class="bot-message">
 
-    <?= nl2br(htmlspecialchars($message["message"])) ?>
+    Hello,
 
-    <?php if (!empty($message["sources"])): ?>
+    <strong>
+        <?= htmlspecialchars($_SESSION["user_name"]) ?>
+    </strong>
+
+    👋
+
+    <br><br>
+
+    <?php if (!empty($documents)): ?>
+
+        Your documents are ready!
 
         <br><br>
-        <strong>Sources</strong><br>
 
-        <?php foreach ($message["sources"] as $source): ?>
+        Select one or more documents and start asking questions.
 
-            <?php
+    <?php else: ?>
 
-            $pages = implode(", ", $source["pages"]);
+        Upload your first document.
 
-            ?>
+        <br><br>
 
-            📄
-
-            <a
-                href="view_document.php?document_id=<?= $source["document_id"] ?>"
-                target="_blank"
-            >
-                <?= htmlspecialchars($source["filename"]) ?>
-            </a>
-
-            (Pages <?= $pages ?>)
-
-            <br>
-
-        <?php endforeach; ?>
+        Then ask me questions related to that document.
 
     <?php endif; ?>
 
 </div>
 
 <?php endif; ?>
-
-<?php endforeach; ?>
-
-<?php endif; ?>
-
-            <div class="bot-message">
-
-                Hello,
-
-                <strong>
-
-                    <?= htmlspecialchars($_SESSION["user_name"]) ?>
-
-                </strong>
-
-                👋
-
-                <br><br>
-
-                <?php if (!empty($documents)): ?>
-
-                    Your documents are ready!
-
-                    <br><br>
-
-                    Select one or more documents and start asking questions.
-
-                <?php else: ?>
-
-                    Upload your first document.
-
-                    <br><br>
-
-                    Then ask me questions related to that document.
-
-                <?php endif; ?>
-
-            </div>
 
         </div>
 
