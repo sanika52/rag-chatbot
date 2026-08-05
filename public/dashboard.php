@@ -133,9 +133,8 @@ if (!isset($_SESSION["selected_documents"])) {
 
             <!-- Make document active -->
             <form
-                action="actions/toggle_selection.php"
-                method="POST"
-                class="document-form">
+    class="document-form"
+    onsubmit="toggleDocument(event, <?= $document["id"] ?>, this)">
 
                 <input
                     type="hidden"
@@ -418,6 +417,62 @@ if (!isset($_SESSION["selected_documents"])) {
             class="chat-box"
             id="chatBox">
 
+            <?php if (!empty($_SESSION["chat_history"])): ?>
+
+<?php foreach ($_SESSION["chat_history"] as $message): ?>
+
+<?php if ($message["role"] === "user"): ?>
+
+<div class="user-message">
+
+    <?= htmlspecialchars($message["message"]) ?>
+
+</div>
+
+<?php else: ?>
+
+<div class="bot-message">
+
+    <?= nl2br(htmlspecialchars($message["message"])) ?>
+
+    <?php if (!empty($message["sources"])): ?>
+
+        <br><br>
+        <strong>Sources</strong><br>
+
+        <?php foreach ($message["sources"] as $source): ?>
+
+            <?php
+
+            $pages = implode(", ", $source["pages"]);
+
+            ?>
+
+            📄
+
+            <a
+                href="view_document.php?document_id=<?= $source["document_id"] ?>"
+                target="_blank"
+            >
+                <?= htmlspecialchars($source["filename"]) ?>
+            </a>
+
+            (Pages <?= $pages ?>)
+
+            <br>
+
+        <?php endforeach; ?>
+
+    <?php endif; ?>
+
+</div>
+
+<?php endif; ?>
+
+<?php endforeach; ?>
+
+<?php endif; ?>
+
             <div class="bot-message">
 
                 Hello,
@@ -460,6 +515,14 @@ if (!isset($_SESSION["selected_documents"])) {
                 id="question"
                 placeholder="Type your question here..."></textarea>
 
+            <a
+    href="actions/clear_chat.php"
+    class="clear-chat-btn"
+    title="Clear Chat"
+    onclick="return confirm('Clear the current conversation?');"
+>
+    <i class="fa-solid fa-trash"></i>
+</a>
             <button
                 id="sendBtn">
 

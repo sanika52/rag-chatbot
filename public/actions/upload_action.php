@@ -107,10 +107,11 @@ $stmt->execute([
 $newDocumentId = $pdo->lastInsertId();
 
 $apiData = [
-    "file_path"   => realpath($destination),
-    "document_id" => (int)$newDocumentId,
-    "user_id"     => (int)$_SESSION["user_id"],
-    "filename"    => $file["name"]
+    "file_path"       => realpath($destination),
+    "document_id"     => (int)$newDocumentId,
+    "user_id"         => (int)$_SESSION["user_id"],
+    "filename"        => $file["name"],
+    "stored_filename" => $storedFileName
 ];
 
 $url = "http://127.0.0.1:8000/process-document";
@@ -126,6 +127,28 @@ $options = [
 $context = stream_context_create($options);
 
 $response = @file_get_contents($url, false, $context);
+
+if ($response === false) {
+
+    $_SESSION["error"] = "Document uploaded, but AI processing failed.";
+
+    header("Location: ../dashboard.php");
+    exit;
+}
+
+$apiResponse = json_decode($response, true);
+
+if (
+    !$apiResponse ||
+    !isset($apiResponse["success"]) ||
+    !$apiResponse["success"]
+) {
+
+    $_SESSION["error"] = "Document uploaded, but AI processing failed.";
+
+    header("Location: ../dashboard.php");
+    exit;
+}
 
 if (!isset($_SESSION["selected_documents"])) {
     $_SESSION["selected_documents"] = [];

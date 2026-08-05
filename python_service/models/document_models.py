@@ -6,3 +6,4 @@ class ProcessDocumentRequest(BaseModel):
     document_id: int
     user_id: int
     filename: str
+    stored_filename: str

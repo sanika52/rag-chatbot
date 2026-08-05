@@ -71,7 +71,7 @@ if (question) {
 // Send Message
 // ============================
 
-function sendMessage() {
+async function sendMessage() {
 
     const message = question.value.trim();
 
@@ -81,14 +81,90 @@ function sendMessage() {
 
     question.value = "";
 
-    setTimeout(function () {
+    // Loading message
+    const loadingDiv = document.createElement("div");
+    loadingDiv.className = "bot-message";
+    loadingDiv.innerHTML = "🤖 Thinking...";
+    chatBox.appendChild(loadingDiv);
+    scrollBottom();
 
-        addBotMessage(
-            "🤖 <strong>AI backend is not connected yet.</strong><br><br>" +
-            "Once the Python RAG service is integrated, I'll answer questions from your uploaded document."
+    try {
+        console.log("Sending question:", message);
+        const response = await fetch(
+            "actions/chat_action.php",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    question: message
+                })
+            }
         );
 
-    }, 600);
+        const data = await response.json();
+        console.log(data);
+
+        loadingDiv.remove();
+
+        if (!response.ok || data.success === false) {
+
+            addBotMessage(
+                "❌ " +
+                (data.message || "Something went wrong.")
+            );
+
+            return;
+        }
+
+        let html = data.answer;
+
+        if (data.sources && data.sources.length > 0) {
+            html += "<br><br><strong>Sources</strong><br>";
+
+            data.sources.forEach(source => {
+
+                const pages = source.pages.join(", ");
+
+                let url =
+                    "view_document.php?document_id=" +
+                    source.document_id;
+
+                if (source.filename.toLowerCase().endsWith(".pdf")) {
+                    url += "#page=" + source.pages[0];
+                }
+
+                html += `
+                    📄
+                    <a href="${url}" target="_blank">
+                        ${source.filename}
+                    </a>
+                    (Pages ${pages})
+                    <br>
+                `;
+
+            });
+
+        }
+
+        addBotMessage(html);
+
+    }
+
+    catch (error) {
+
+        loadingDiv.remove();
+
+        addBotMessage(
+            "❌ Unable to connect to the AI service."
+        );
+
+        console.error(error);
+
+    }
 
 }
 
@@ -164,5 +240,91 @@ if (profileBtn && profileDropdown) {
 function scrollBottom() {
 
     chatBox.scrollTop = chatBox.scrollHeight;
+
+}
+
+async function toggleDocument(event, documentId, form) {
+
+    event.preventDefault();
+
+    const formData = new FormData();
+
+    formData.append("document_id", documentId);
+
+    try {
+
+        const response = await fetch(
+            "actions/toggle_selection.php",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            alert("Unable to update selection.");
+
+            return;
+
+        }
+
+        const documentCard =
+            form.closest(".uploaded-document");
+
+        const label =
+            documentCard.querySelector(".selected-label");
+
+        if (data.selected) {
+
+            documentCard.classList.add(
+                "selected-document"
+            );
+
+            if (!label) {
+
+                const status =
+                    documentCard.querySelector(
+                        ".document-status"
+                    );
+
+                status.insertAdjacentHTML(
+                    "beforeend",
+                    `
+                    <span class="selected-label">
+                        Selected
+                    </span>
+                    `
+                );
+
+            }
+
+        }
+
+        else {
+
+            documentCard.classList.remove(
+                "selected-document"
+            );
+
+            if (label) {
+
+                label.remove();
+
+            }
+
+        }
+
+    }
+
+   catch (error) {
+
+    console.error(error);
+
+    alert(error.stack);
+
+}
 
 }

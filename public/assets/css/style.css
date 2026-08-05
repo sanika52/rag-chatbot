@@ -634,6 +634,8 @@ body{
 
     gap:15px;
 
+    align-items: center;
+
 }
 
 .chat-input textarea{
@@ -668,17 +670,21 @@ body{
 
 #sendBtn{
 
-    width:140px;
+    width:170px;
+
+    height:56px;
 
     border:none;
 
-    border-radius:12px;
+    border-radius:14px;
 
     background:#2563eb;
 
     color:white;
 
-    font-size:16px;
+    font-size:18px;
+
+    font-weight:600;
 
     cursor:pointer;
 
@@ -688,9 +694,11 @@ body{
 
     align-items:center;
 
-    gap:8px;
+    gap:10px;
 
     transition:.3s;
+
+    flex-shrink:0;
 
 }
 
@@ -828,4 +836,49 @@ width:100%;
 .uploaded-document:hover {
 
     border-color: #2563eb;
+}
+
+/* ===========================
+   Clear Chat Icon Button
+=========================== */
+.clear-chat-btn {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 12px;
+
+    background: #EEF3FF;
+
+    border: 2px solid #2F61E8;
+
+    color: #2F61E8;
+
+    text-decoration: none;
+
+    transition: .25s;
+
+    flex-shrink: 0;
+
+}
+
+.clear-chat-btn:hover {
+
+    background: #2F61E8;
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 18px rgba(47,97,232,.18);
+
+}
+
+.clear-chat-btn i {
+
+    font-size: 22px;
+
 }

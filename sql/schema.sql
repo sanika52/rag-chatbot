@@ -51,3 +51,53 @@ CREATE TABLE chat_history (
         REFERENCES users(id)
         ON DELETE CASCADE
 );
+
+/*
+|--------------------------------------------------------------------------
+| Conversations
+|--------------------------------------------------------------------------
+*/
+
+CREATE TABLE conversations (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    user_id INT NOT NULL,
+
+    title VARCHAR(255) DEFAULT 'New Chat',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_conversations_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+
+);
+
+/*
+|--------------------------------------------------------------------------
+| Chat Messages
+|--------------------------------------------------------------------------
+*/
+
+CREATE TABLE chat_messages (
+
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    conversation_id INT NOT NULL,
+
+    role ENUM('user', 'assistant') NOT NULL,
+
+    message TEXT NOT NULL,
+
+    sources JSON DEFAULT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_chat_messages_conversation
+        FOREIGN KEY (conversation_id)
+        REFERENCES conversations(id)
+        ON DELETE CASCADE
+
+);

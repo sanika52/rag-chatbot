@@ -10,7 +10,6 @@ require_once "../../config/database.php";
 */
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-
     header("Location: ../dashboard.php");
     exit();
 }
@@ -101,5 +100,14 @@ if (in_array($documentId, $selectedDocuments)) {
 |--------------------------------------------------------------------------
 */
 
-header("Location: ../dashboard.php");
+header("Content-Type: application/json");
+
+echo json_encode([
+    "success" => true,
+    "selected" => in_array(
+        $documentId,
+        $_SESSION["selected_documents"]
+    )
+]);
+
 exit();

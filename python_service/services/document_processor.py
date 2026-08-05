@@ -9,7 +9,8 @@ class DocumentProcessor:
     def extract_text(file_path: str):
         """
         Extract text from PDF, DOCX or TXT files.
-        Returns a list of pages:
+
+        Returns:
         [
             {
                 "page_number": 1,
@@ -39,6 +40,7 @@ class DocumentProcessor:
 
     @staticmethod
     def _extract_pdf(path: Path):
+
         reader = PdfReader(path)
 
         pages = []
@@ -69,7 +71,7 @@ class DocumentProcessor:
 
         return [
             {
-                "page_number": None,
+                "page_number": 1,
                 "text": text
             }
         ]
@@ -82,7 +84,7 @@ class DocumentProcessor:
 
         return [
             {
-                "page_number": None,
+                "page_number": 1,
                 "text": text
             }
         ]
