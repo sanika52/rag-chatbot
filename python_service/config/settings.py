@@ -9,5 +9,5 @@ class Settings:
     MAX_CONTEXT_CHUNKS = 5
 
     # Chunking
-    CHUNK_SIZE = 1000
-    CHUNK_OVERLAP = 200
+    CHUNK_SIZE = 300  # Originally 1000
+    CHUNK_OVERLAP = 50 # Originally 200

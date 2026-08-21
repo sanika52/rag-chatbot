@@ -12,12 +12,14 @@ from services.document_processor import DocumentProcessor
 from services.embeddings import EmbeddingService
 from services.llm import LLMService
 from services.rag import RAGService
+from services.reranker import RerankerService
 
 
 # Global services
 embedding_service = None
 chroma_service = None
 llm_service = None
+reranker_service = None
 rag_service = None
 
 
@@ -27,29 +29,59 @@ async def lifespan(app: FastAPI):
     global embedding_service
     global chroma_service
     global llm_service
+    global reranker_service
     global rag_service
+
+    # --------------------------------------------------
+    # Load embedding model
+    # --------------------------------------------------
 
     print("Loading BGE-M3 embedding model...")
 
     model = SentenceTransformer("BAAI/bge-m3")
 
     embedding_service = EmbeddingService(model)
+
+    print("BGE-M3 loaded successfully!")
+
+    # --------------------------------------------------
+    # Initialize services
+    # --------------------------------------------------
+
     chroma_service = ChromaService()
+
     llm_service = LLMService()
+
+    reranker_service = RerankerService()
+
+    # --------------------------------------------------
+    # Initialize RAG service
+    # --------------------------------------------------
 
     rag_service = RAGService(
         embedding_service=embedding_service,
         chroma_service=chroma_service,
-        llm_service=llm_service
+        llm_service=llm_service,
+        reranker_service=reranker_service
     )
 
-    print("BGE-M3 loaded successfully!")
+    print("All RAG services initialized successfully!")
 
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+# --------------------------------------------------
+# FastAPI application
+# --------------------------------------------------
 
+app = FastAPI(
+    lifespan=lifespan
+)
+
+
+# --------------------------------------------------
+# Root
+# --------------------------------------------------
 
 @app.get("/")
 def root():
@@ -60,6 +92,10 @@ def root():
     }
 
 
+# --------------------------------------------------
+# Health
+# --------------------------------------------------
+
 @app.get("/health")
 def health():
 
@@ -68,27 +104,46 @@ def health():
     }
 
 
+# --------------------------------------------------
+# Process Document
+# --------------------------------------------------
+
 @app.post("/process-document")
-def process_document(request: ProcessDocumentRequest):
+def process_document(
+    request: ProcessDocumentRequest
+):
 
     try:
 
+        # ----------------------------------------------
         # Step 1 - Extract text
+        # ----------------------------------------------
+
         pages = DocumentProcessor.extract_text(
             request.file_path
         )
 
+        # ----------------------------------------------
         # Step 2 - Chunk text
+        # ----------------------------------------------
+
         chunker = TextChunker()
 
         chunks = chunker.split(
             pages
         )
 
+        # ----------------------------------------------
         # Step 3 - Generate embeddings
+        # ----------------------------------------------
+
         embeddings = embedding_service.embed_chunks(
             chunks
         )
+
+        # ----------------------------------------------
+        # Step 4 - Store in ChromaDB
+        # ----------------------------------------------
 
         stored_chunks = chroma_service.store_document(
             document_id=request.document_id,
@@ -98,6 +153,10 @@ def process_document(request: ProcessDocumentRequest):
             chunks=chunks,
             embeddings=embeddings
         )
+
+        # ----------------------------------------------
+        # Statistics
+        # ----------------------------------------------
 
         total_characters = sum(
             len(page["text"])
@@ -122,8 +181,14 @@ def process_document(request: ProcessDocumentRequest):
         )
 
 
+# --------------------------------------------------
+# Chat
+# --------------------------------------------------
+
 @app.post("/chat")
-def chat(request: ChatRequest):
+def chat(
+    request: ChatRequest
+):
 
     return rag_service.answer_question(
         question=request.question,
