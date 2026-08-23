@@ -10,17 +10,26 @@ from services.chunker import TextChunker
 from services.chroma_service import ChromaService
 from services.document_processor import DocumentProcessor
 from services.embeddings import EmbeddingService
-from services.llm import LLMService
+from services.qa import QAService
 from services.rag import RAGService
 from services.reranker import RerankerService
+from services.paraphraser import ParaphraserService
 
-
+# --------------------------------------------------
 # Global services
+# --------------------------------------------------
+
 embedding_service = None
 chroma_service = None
-llm_service = None
 reranker_service = None
+qa_service = None
+paraphraser_service = None
 rag_service = None
+
+
+# --------------------------------------------------
+# Application lifespan
+# --------------------------------------------------
 
 
 @asynccontextmanager
@@ -28,8 +37,9 @@ async def lifespan(app: FastAPI):
 
     global embedding_service
     global chroma_service
-    global llm_service
     global reranker_service
+    global qa_service
+    global paraphraser_service
     global rag_service
 
     # --------------------------------------------------
@@ -45,14 +55,28 @@ async def lifespan(app: FastAPI):
     print("BGE-M3 loaded successfully!")
 
     # --------------------------------------------------
-    # Initialize services
+    # Initialize Chroma
     # --------------------------------------------------
 
     chroma_service = ChromaService()
 
-    llm_service = LLMService()
+    # --------------------------------------------------
+    # Load BGE reranker
+    # --------------------------------------------------
 
     reranker_service = RerankerService()
+
+    # --------------------------------------------------
+    # Load extractive QA model
+    # --------------------------------------------------
+
+    qa_service = QAService()
+
+    # --------------------------------------------------
+    # Load paraphrasing model
+    # --------------------------------------------------
+
+    paraphraser_service = ParaphraserService()
 
     # --------------------------------------------------
     # Initialize RAG service
@@ -61,8 +85,9 @@ async def lifespan(app: FastAPI):
     rag_service = RAGService(
         embedding_service=embedding_service,
         chroma_service=chroma_service,
-        llm_service=llm_service,
-        reranker_service=reranker_service
+        reranker_service=reranker_service,
+        qa_service=qa_service,
+        paraphraser_service=paraphraser_service,
     )
 
     print("All RAG services initialized successfully!")
@@ -71,79 +96,59 @@ async def lifespan(app: FastAPI):
 
 
 # --------------------------------------------------
-# FastAPI application
+# FastAPI
 # --------------------------------------------------
 
-app = FastAPI(
-    lifespan=lifespan
-)
+app = FastAPI(lifespan=lifespan)
 
 
 # --------------------------------------------------
 # Root
 # --------------------------------------------------
 
+
 @app.get("/")
 def root():
 
-    return {
-        "status": "running",
-        "service": "RAG Chatbot API"
-    }
+    return {"status": "running", "service": "RAG Chatbot API"}
 
 
 # --------------------------------------------------
 # Health
 # --------------------------------------------------
 
+
 @app.get("/health")
 def health():
 
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}
 
 
 # --------------------------------------------------
-# Process Document
+# Process document
 # --------------------------------------------------
+
 
 @app.post("/process-document")
-def process_document(
-    request: ProcessDocumentRequest
-):
+def process_document(request: ProcessDocumentRequest):
 
     try:
 
-        # ----------------------------------------------
-        # Step 1 - Extract text
-        # ----------------------------------------------
+        # Step 1: Extract text
 
-        pages = DocumentProcessor.extract_text(
-            request.file_path
-        )
+        pages = DocumentProcessor.extract_text(request.file_path)
 
-        # ----------------------------------------------
-        # Step 2 - Chunk text
-        # ----------------------------------------------
+        # Step 2: Chunk
 
         chunker = TextChunker()
 
-        chunks = chunker.split(
-            pages
-        )
+        chunks = chunker.split(pages)
 
-        # ----------------------------------------------
-        # Step 3 - Generate embeddings
-        # ----------------------------------------------
+        # Step 3: Generate embeddings
 
-        embeddings = embedding_service.embed_chunks(
-            chunks
-        )
+        embeddings = embedding_service.embed_chunks(chunks)
 
-        # ----------------------------------------------
-        # Step 4 - Store in ChromaDB
-        # ----------------------------------------------
+        # Step 4: Store in Chroma
 
         stored_chunks = chroma_service.store_document(
             document_id=request.document_id,
@@ -151,17 +156,10 @@ def process_document(
             filename=request.filename,
             stored_filename=request.stored_filename,
             chunks=chunks,
-            embeddings=embeddings
+            embeddings=embeddings,
         )
 
-        # ----------------------------------------------
-        # Statistics
-        # ----------------------------------------------
-
-        total_characters = sum(
-            len(page["text"])
-            for page in pages
-        )
+        total_characters = sum(len(page["text"]) for page in pages)
 
         return {
             "success": True,
@@ -170,28 +168,33 @@ def process_document(
             "characters": total_characters,
             "chunks": len(chunks),
             "stored_chunks": stored_chunks,
-            "embedding_dimension": len(embeddings[0])
+            "embedding_dimension": len(embeddings[0]),
         }
 
     except Exception as e:
 
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # --------------------------------------------------
 # Chat
 # --------------------------------------------------
 
-@app.post("/chat")
-def chat(
-    request: ChatRequest
-):
 
-    return rag_service.answer_question(
-        question=request.question,
-        user_id=request.user_id,
-        document_ids=request.document_ids
-    )
+@app.post("/chat")
+def chat(request: ChatRequest):
+
+    try:
+
+        return rag_service.answer_question(
+            question=request.question,
+            user_id=request.user_id,
+            document_ids=request.document_ids,
+        )
+
+    except Exception as e:
+
+        print("\nCHAT ERROR:")
+        print(str(e))
+
+        raise HTTPException(status_code=500, detail=str(e))

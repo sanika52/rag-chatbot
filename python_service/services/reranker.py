@@ -1,25 +1,20 @@
-from FlagEmbedding import FlagReranker
+from sentence_transformers import CrossEncoder
 
 
 class RerankerService:
 
     def __init__(self):
 
-        print("Loading BGE reranker model...")
+        print("Loading BGE reranker...")
 
-        self.model = FlagReranker(
-            "BAAI/bge-reranker-v2-m3",
-            use_fp16=False
-        )
+        self.model = CrossEncoder("BAAI/bge-reranker-base")
 
         print("BGE reranker loaded successfully!")
 
-    def rerank(
-        self,
-        question: str,
-        chunks: list[dict],
-        top_k: int
-    ):
+    def rerank(self, question: str, chunks: list, top_k: int = 5):
+
+        if not question or not question.strip():
+            return []
 
         if not chunks:
             return []
@@ -28,29 +23,60 @@ class RerankerService:
 
         for chunk in chunks:
 
-            pairs.append([
-                question,
-                chunk["text"]
-            ])
+            text = chunk.get("text", "").strip()
 
-        scores = self.model.compute_score(
-            pairs,
-            normalize=True
-        )
+            if not text:
+                continue
 
-        # If only one chunk is supplied,
-        # compute_score may return a single float.
-        if isinstance(scores, float):
-            scores = [scores]
+            pairs.append((question, text))
 
-        for chunk, score in zip(chunks, scores):
+        if not pairs:
+            return []
 
-            chunk["rerank_score"] = float(score)
+        scores = self.model.predict(pairs)
 
-        # Highest score = most relevant
-        chunks.sort(
-            key=lambda chunk: chunk["rerank_score"],
-            reverse=True
-        )
+        scored_chunks = []
 
-        return chunks[:top_k]
+        pair_index = 0
+
+        for chunk in chunks:
+
+            text = chunk.get("text", "").strip()
+
+            if not text:
+                continue
+
+            chunk_copy = chunk.copy()
+
+            chunk_copy["rerank_score"] = float(scores[pair_index])
+
+            scored_chunks.append(chunk_copy)
+
+            pair_index += 1
+
+        # Highest BGE score = most relevant.
+        scored_chunks.sort(key=lambda x: x["rerank_score"], reverse=True)
+
+        return scored_chunks[:top_k]
+
+    def score_sentences(self, question: str, sentences: list):
+
+        if not question or not question.strip():
+            return []
+
+        if not sentences:
+            return []
+
+        pairs = [(question, sentence) for sentence in sentences]
+
+        scores = self.model.predict(pairs)
+
+        scored_sentences = []
+
+        for sentence, score in zip(sentences, scores):
+
+            scored_sentences.append({"text": sentence, "rerank_score": float(score)})
+
+        scored_sentences.sort(key=lambda x: x["rerank_score"], reverse=True)
+
+        return scored_sentences
